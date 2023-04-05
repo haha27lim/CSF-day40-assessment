@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,7 +25,7 @@ import ibf2022.batch1.csf.assessment.server.services.MovieService;
 
 @RestController
 @CrossOrigin(origins="*")
-@RequestMapping(path="/api", produces= MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path="/api")
 public class MovieController {
 
 	// TODO: Task 3, Task 4, Task 8
@@ -34,7 +35,7 @@ public class MovieController {
 	@Autowired
 	private MovieService movieSvc;
 
-	@GetMapping("/search")
+	@GetMapping(path="/search", produces= MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> searchMovies(@RequestParam(value = "query", required = true) String title) {
 		List<Review> reviews = movieSvc.searchReviews(title);
 		if (reviews.isEmpty()) {
@@ -54,7 +55,9 @@ public class MovieController {
 		}
 	}
 
-
-
-
+	@PostMapping(path="/comment", produces= MediaType.APPLICATION_JSON_VALUE) 
+	public ResponseEntity<Review> createComment(@RequestParam("movieName") String movieName) {
+		return null;
+	}
 }
+
