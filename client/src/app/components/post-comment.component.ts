@@ -1,30 +1,42 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { ReviewService } from '../Review.service';
 
 @Component({
   selector: 'app-post-comment',
   templateUrl: './post-comment.component.html',
   styleUrls: ['./post-comment.component.css']
 })
-export class PostCommentComponent implements OnInit {
+export class PostCommentComponent implements OnInit, OnDestroy  {
   movieTitle!: string;
   commentForm!: FormGroup;
-  ratings: number[] = [1, 2, 3, 4, 5];
+  queryParams$! :  Subscription;
 
-  constructor(private fb: FormBuilder, private router: Router) { }
+  constructor(private fb: FormBuilder, private router: Router, private activatedRoute: ActivatedRoute,
+    private reviewSvc: ReviewService) { }
 
   ngOnInit(): void {
-    this.commentForm = this.createForm() 
+    this.commentForm = this.createForm()
+    this.queryParams$ = this.activatedRoute.queryParams.subscribe(
+      (queryParams) => {
+        const title = queryParams['title'];
+      }
+    );
   }
 
-  onSubmit(): void {
-    
-    this.commentForm.reset()
+  saveComment() {
+    const comment = this.commentForm.value as Comment;
+  
+    this.reviewSvc.saveComment(comment);
+    this.router.navigate(['/list']);
   }
+  
 
   onBackClick(): void {
-    this.router.navigate(['/']);
+    this.commentForm.reset()
+    this.router.navigate(['/list']);
   }
 
   private createForm(): FormGroup {
@@ -33,6 +45,10 @@ export class PostCommentComponent implements OnInit {
       rating: this.fb.control<string>('', Validators.required),
       comment: this.fb.control<string>('', Validators.required)
     });
+  }
+
+  ngOnDestroy(): void{
+    this.queryParams$.unsubscribe();
   }
 
 }

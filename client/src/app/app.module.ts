@@ -23,7 +23,7 @@ import { ReviewService } from './Review.service';
     ReactiveFormsModule,
     HttpClientModule
   ],
-  providers: [ReviewService],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

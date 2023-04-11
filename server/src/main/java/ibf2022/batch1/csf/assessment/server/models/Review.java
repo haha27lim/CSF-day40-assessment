@@ -2,6 +2,9 @@ package ibf2022.batch1.csf.assessment.server.models;
 
 import org.springframework.stereotype.Repository;
 
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+
 @Repository
 // DO NOT MODIFY THIS CLASS
 public class Review {
@@ -51,5 +54,35 @@ public class Review {
 	@Override
 	public String toString() {
 		return "Review{title:%s, rating:%s}".formatted(title, rating);
+	}
+
+	public JsonObject toJson(Review review) {
+        return Json.createObjectBuilder()
+            .add("title", review.getTitle())
+            .add("rating", review.getRating())
+            .add("byline", review.getByline())
+			.add("headline", review.getHeadline())
+			.add("summary", review.getSummary())
+			.add("reviewURL", review.getReviewURL())
+			.add("image", review.getImage())
+			.add("commentCount", review.getCommentCount())
+            .build();
+    }
+
+	public static Review toReview(JsonObject obj) {
+		Review review = new Review();
+		review.setTitle(obj.getString("display_title"));
+		review.setRating(obj.getString("mpaa_rating"));
+		review.setByline(obj.getString("byline"));
+		review.setHeadline(obj.getString("headline"));
+		review.setSummary(obj.getString("summary_short"));
+		review.setReviewURL(obj.getJsonObject("link").getString("url"));
+		if(obj.get("multimedia").toString().equals("null")){
+			review.setImage("");
+		}else{			
+			review.setImage(obj.getJsonObject("multimedia").getString("src"));
+		}
+		review.setCommentCount(0);
+		return review;
 	}
 }

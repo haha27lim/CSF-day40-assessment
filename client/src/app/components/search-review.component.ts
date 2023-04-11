@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Params, Router } from '@angular/router';
+import { ReviewService } from '../Review.service';
 
 
 @Component({
@@ -9,29 +10,34 @@ import { Router } from '@angular/router';
   styleUrls: ['./search-review.component.css']
 })
 export class SearchReviewComponent implements OnInit {
-  form!:FormGroup;
-  searchQuery: string = '';
-  isSearchButtonDisabled: boolean = true;
 
-  constructor(private fb: FormBuilder) {}
-  
-  ngOnInit(): void {
-    this.form = this.createForm(); 
+  form!: FormGroup;
+  ButtonDisabled: boolean = true;
+
+  constructor(private fb: FormBuilder, private router: Router, private reviewSvc: ReviewService) {}
+
+  ngOnInit() {
+    this.form = this.createForm();
   }
 
   onSearchInput() {
-    this.searchQuery = this.searchQuery.trim();
-    this.isSearchButtonDisabled = this.searchQuery.length < 2;
+    const title = this.form.value.title.trim();
+    this.ButtonDisabled = title.length < 2;
   }
-
+  
   onSubmit() {
-    console.log('Title:', this.searchQuery);
+    const title = this.form.value.title.trim();
+    console.info('>>>title: ', title)
+    const queryParams: Params = {query: title };
+    this.router.navigate(['/list'], {queryParams: {query: title}});
+    this.form.reset()
   }
 
   private createForm(): FormGroup{
     return this.fb.group({
-        searchQuery: ['', Validators.minLength(2)]
+      title: this.fb.control<string>('', [Validators.required, Validators.minLength(2)])
+
     });
   }
-
 }
+

@@ -19,9 +19,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-
+import ibf2022.batch1.csf.assessment.server.models.Comment;
 import ibf2022.batch1.csf.assessment.server.models.Review;
 import ibf2022.batch1.csf.assessment.server.services.MovieService;
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
 
 @RestController
 @CrossOrigin(origins="*")
@@ -35,29 +38,39 @@ public class MovieController {
 	@Autowired
 	private MovieService movieSvc;
 
-	@GetMapping(path="/search", produces= MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> searchMovies(@RequestParam(value = "query", required = true) String title) {
-		List<Review> reviews = movieSvc.searchReviews(title);
-		if (reviews.isEmpty()) {
-			return ResponseEntity.noContent().build();
-		} else {
-			ObjectMapper objectMapper = new ObjectMapper();
-			String reviewsJson = null;
-			try {
-				reviewsJson = objectMapper.writeValueAsString(reviews);
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
+	@GetMapping(path = "/search")
+	public ResponseEntity<String> getSearch(@RequestParam(name="query", required = true) String title) {
+
+		JsonArray result = null;
+		List<Review> results = movieSvc.searchReviews(title);
+	
+		JsonArrayBuilder arrBuilder = Json.createArrayBuilder();
+		if (results != null) {
+			for (Review rv : results) {
+				arrBuilder.add(rv.toJson(rv));
 			}
-			return ResponseEntity
-					.status(HttpStatus.OK)
-					.contentType(MediaType.APPLICATION_JSON)
-					.body(reviewsJson);
 		}
+	
+		result = arrBuilder.build();
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(result.toString());
 	}
 
-	@PostMapping(path="/comment", produces= MediaType.APPLICATION_JSON_VALUE) 
-	public ResponseEntity<Review> createComment(@RequestParam("movieName") String movieName) {
-		return null;
+	@PostMapping(path = "/comment", consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+	public ResponseEntity<String> saveComment(@RequestParam String title, @RequestParam String name, 
+			@RequestParam Integer rating, @RequestParam String comment) {
+		Comment c= new Comment();
+		c.setTitle(title);
+		c.setName(name);
+		c.setRating(rating);
+		c.setComment(comment);
+		Comment r = movieSvc.insertComment(c);
+		return ResponseEntity
+            .status(HttpStatus.OK)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(r.toJSON().toString());
 	}
 }
 

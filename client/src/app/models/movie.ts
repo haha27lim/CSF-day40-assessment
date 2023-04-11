@@ -1,8 +1,3 @@
-export interface Movie {
-    title: string;
-    summary: string;
-}
-
 export interface Review {
     title: string;
     rating: string;
@@ -11,11 +6,13 @@ export interface Review {
     summary: string;
     reviewURL: string;
     image?: string;
+    commentCount: number;
 }
 
 export interface Comment {
-     name: string;
-     rating: string;
-     comment: string; 
+    title: string;
+    name: string;
+    rating: number;
+    comment: string; 
 }
   

@@ -9,10 +9,12 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.data.mongodb.core.query.TextQuery;
 
+import ibf2022.batch1.csf.assessment.server.models.Comment;
 import ibf2022.batch1.csf.assessment.server.models.Movie;
 
 public class MovieRepository {
@@ -20,40 +22,33 @@ public class MovieRepository {
 	@Autowired
   	private MongoTemplate mongoTemplate;
 
+	  private static final String COMMENTS_COL = "comments";
+
+
 	// TODO: Task 5
 	// You may modify the parameter but not the return type
 	// Write the native mongo database query in the comment below
 	//
-	public int countComments() {
-		Aggregation aggregation = Aggregation.newAggregation(
-        Aggregation.lookup("comments", "_id", "movieId", "comments"),
-        Aggregation.project()
-            .and("title").as("title")
-            .and("reviews").size().as("reviewCount"),
-        Aggregation.sort(Sort.by(Direction.DESC, "commentCount"))
-		);
-		AggregationResults<Document> results = mongoTemplate.aggregate(aggregation, "movies", Document.class);
-		List<Document> documents = results.getMappedResults();
-		int totalCommentCount = 0;
-		for (Document document : documents) {
-		  int commentCount = document.getInteger("commentCount", 0);
-		  totalCommentCount += commentCount;
-		}
-		return totalCommentCount;
-	  }
+	//db.comments.find({ title: "your_title_here" }).count()
+
+	public int countComments(String title) {
+		Query query = new Query(Criteria.where("title").is(title));
+    	return (int) mongoTemplate.count(query, COMMENTS_COL);
+	}
 
 	// TODO: Task 8
 	// Write a method to insert movie comments comments collection
 	// Write the native mongo database query in the comment below
 	//
 
+	// db.comments.insert({
+		// title:title,
+		// name:name,
+		// rating:rating,
+		// comment:comment
+	// })
 
-	
-
-	public List<Movie> searchMovies (String query) {
-	  TextCriteria criteria = TextCriteria.forDefaultLanguage().matchingAny(query);
-	  Query searchQuery = TextQuery.queryText(criteria).sortByScore();
-	  List<Movie> movies = mongoTemplate.find(searchQuery, Movie.class);
-	  return movies;
-	}
+	public Comment insertComment(Comment r) {
+        return mongoTemplate.insert(r, COMMENTS_COL);
+    }
 }
