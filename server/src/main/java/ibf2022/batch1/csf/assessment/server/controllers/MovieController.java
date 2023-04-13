@@ -18,32 +18,40 @@ import org.springframework.http.MediaType;
 
 import ibf2022.batch1.csf.assessment.server.models.Comment;
 import ibf2022.batch1.csf.assessment.server.models.Review;
+import ibf2022.batch1.csf.assessment.server.repositories.MovieRepository;
 import ibf2022.batch1.csf.assessment.server.services.MovieService;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 
 @RestController
-@CrossOrigin(origins="*")
-@RequestMapping(path="/api")
+@CrossOrigin(origins = "*")
+@RequestMapping(path="/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MovieController {
 
 	// TODO: Task 3, Task 4, Task 8
 
-	private Logger logger = LoggerFactory.getLogger(MovieController.class);
+	@Autowired
+    private MovieService movieSvc;
 
 	@Autowired
-	private MovieService movieSvc;
+	private MovieRepository movieRepo;
+
+	private Logger logger = LoggerFactory.getLogger(MovieController.class);
 
 	@GetMapping(path = "/search")
 	public ResponseEntity<String> getSearch(@RequestParam(name="query", required = true) String title) {
 
 		JsonArray result = null;
-		List<Review> results = movieSvc.searchReviews(title);
-	
+		List<Review> reviews = movieSvc.searchReviews(title);
+
+		for(Review rv: reviews){
+			rv.setCommentCount(movieRepo.countComments(rv.getTitle()));
+		  }
+
 		JsonArrayBuilder arrBuilder = Json.createArrayBuilder();
-		if (results != null) {
-			for (Review rv : results) {
+		if (reviews != null) {
+			for (Review rv : reviews) {
 				arrBuilder.add(rv.toJson(rv));
 			}
 		}
@@ -54,6 +62,7 @@ public class MovieController {
 			.contentType(MediaType.APPLICATION_JSON)
 			.body(result.toString());
 	}
+	
 
 	@PostMapping(path = "/comment", consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public ResponseEntity<String> saveComment(@RequestParam String title, @RequestParam String name, 

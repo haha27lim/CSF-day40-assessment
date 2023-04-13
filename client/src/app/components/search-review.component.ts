@@ -14,7 +14,7 @@ export class SearchReviewComponent implements OnInit {
   form!: FormGroup;
   ButtonDisabled: boolean = true;
 
-  constructor(private fb: FormBuilder, private router: Router, private reviewSvc: ReviewService) {}
+  constructor(private fb: FormBuilder, private router: Router) {}
 
   ngOnInit() {
     this.form = this.createForm();
@@ -26,11 +26,9 @@ export class SearchReviewComponent implements OnInit {
   }
   
   onSubmit() {
-    const title = this.form.value.title.trim();
-    console.info('>>>title: ', title)
-    const queryParams: Params = {query: title };
+    const title = this.form?.value['title']
+    console.log('>>>title: ', title)
     this.router.navigate(['/list'], {queryParams: {query: title}});
-    this.form.reset()
   }
 
   private createForm(): FormGroup{

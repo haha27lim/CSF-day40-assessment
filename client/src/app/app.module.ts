@@ -8,7 +8,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { SearchReviewComponent } from './components/search-review.component';
 import { MovieReviewsListComponent } from './components/movie-reviews-list.component';
 import { PostCommentComponent } from './components/post-comment.component';
-import { ReviewService } from './Review.service';
+
 
 @NgModule({
   declarations: [

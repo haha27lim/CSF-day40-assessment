@@ -1,6 +1,6 @@
-<h2>Post Comment for {{ movieTitle }}</h2>
+<h2>Post Comment for {{ title }}</h2>
 
-<form [formGroup]="commentForm" (ngSubmit)="onSubmit()">
+<form [formGroup]="commentForm" (ngSubmit)="saveComment()">
     <table>
       <tr>
         <td><label>Name: </label></td>
@@ -13,10 +13,10 @@
       <tr>
         <td><label>Rating: </label></td>
         <td>
-          <select id="rating" formControlName="rating">
-            <option value=""></option>
-            <option *ngFor="let r of ratings" [value]="r">{{ r }}</option>
-          </select>
+          <input type="number" size="30" min="1" max="5" formControlName="rating">
+          <div *ngIf="commentForm.invalid && (commentForm.dirty || commentForm.touched)" class="error">
+            Rating from 1 to 5
+          </div>
         </td>
       </tr>
       <tr>

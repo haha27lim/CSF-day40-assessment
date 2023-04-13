@@ -5,13 +5,15 @@
 
 <table >
     <ng-container *ngIf="reviews.length > 0; else noResults">
-      <tr *ngFor="let review of reviews" class="article">
-        <td><a href="{{ review.reviewURL }}" target="_blank">{{ review.title }}</a></td>
-        <td>{{ review.rating }}</td>
-        <td>{{ review.headline }}</td>
-        <td>{{ review.summary }}</td>
-        <td><img [src]="review.image" alt="{{ review.title }}" width="100"></td>
-        <td><button (click)="onCommentClick(review)">Comment</button></td>
+      <tr *ngFor="let review of reviews" >
+        <td><img [src]="review.image ? review.image : '../../assets/placeholder.jpg'" alt="{{ review.title }}" width="100%"></td>
+        <td class="article">
+          <a href="{{ review.reviewURL }}" target="_blank">{{ review.title }}&nbsp;&nbsp;&nbsp;|{{ review.rating }}</a>
+          <p>{{ review.headline }}</p>
+          <p>{{ review.summary }}</p>
+          <p>Comments: {{ review.commentCount }}</p>
+          <button class="comment" (click)="onCommentClick(review)">Comment</button>
+        </td>
       </tr>
     </ng-container>
     <ng-template #noResults>
@@ -20,5 +22,4 @@
       </tr>
     </ng-template>
 </table>
-
 

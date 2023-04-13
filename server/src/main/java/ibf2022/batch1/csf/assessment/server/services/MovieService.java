@@ -32,14 +32,14 @@ public class MovieService {
 	@Value("${nytimeskey}")
     private String API_KEY;
 
-    @Autowired
+	@Autowired
     private MovieRepository movieRepo;
 
 	// TODO: Task 4
 	// DO NOT CHANGE THE METHOD'S SIGNATURE
 	public List<Review> searchReviews(String query) {
 
-        String url = UriComponentsBuilder
+		String url = UriComponentsBuilder
 						.fromUriString(BASE_URL)
 						.queryParam("query", query.replaceAll(" ", "+"))
                     	.queryParam("api-key", API_KEY)
@@ -77,12 +77,9 @@ public class MovieService {
                 .map(v -> v.asJsonObject())
                 .map(Review::toReview)
                 .toList();
-    
 	}
 
 	public Comment insertComment(Comment r){
         return movieRepo.insertComment(r);
     }
-    
-
 }

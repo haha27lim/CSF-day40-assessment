@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ReviewService } from '../Review.service';
+import { Comment } from '../models/movie';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-post-comment',
@@ -10,33 +12,46 @@ import { ReviewService } from '../Review.service';
   styleUrls: ['./post-comment.component.css']
 })
 export class PostCommentComponent implements OnInit, OnDestroy  {
-  movieTitle!: string;
+  
   commentForm!: FormGroup;
   queryParams$! :  Subscription;
+  isFormValid: boolean = false;
+  title!: string;
 
   constructor(private fb: FormBuilder, private router: Router, private activatedRoute: ActivatedRoute,
-    private reviewSvc: ReviewService) { }
+    private reviewSvc: ReviewService, private location: Location) { }
 
   ngOnInit(): void {
     this.commentForm = this.createForm()
     this.queryParams$ = this.activatedRoute.queryParams.subscribe(
-      (queryParams) => {
-        const title = queryParams['title'];
+      async (queryParams) => {
+        this.title = queryParams['moviename']
+        console.log('>>>title:', this.title)
       }
-    );
+    )
   }
 
-  saveComment() {
-    const comment = this.commentForm.value as Comment;
-  
-    this.reviewSvc.saveComment(comment);
-    this.router.navigate(['/list']);
+  saveComment(): void {
+    if (!this.commentForm.valid) {
+      return;
+    }
+    const comment: Comment = {
+      title: this.title,
+      name: this.commentForm.get('name')?.value,
+      rating: this.commentForm.get('rating')?.value,
+      comment: this.commentForm.get('comment')?.value
+    }; 
+
+    this.reviewSvc.postComment(comment)
+    .then((res) => {
+      console.log(res)
+      this.location.back();
+    })
   }
   
-
   onBackClick(): void {
     this.commentForm.reset()
-    this.router.navigate(['/list']);
+    this.location.back();
   }
 
   private createForm(): FormGroup {

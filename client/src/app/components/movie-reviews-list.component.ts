@@ -11,24 +11,25 @@ import { Subscription } from 'rxjs';
 })
 export class MovieReviewsListComponent implements OnInit, OnDestroy {
 
-  reviews: Review[] = [];
-  queryParams$!: Subscription;
-  replacementPicture: string = "/assets/placeholder.jpg"
+  title!: string
+  queryParams$!: Subscription
+  reviews: Review[] = []
 
-  constructor(private reviewService: ReviewService, private router: Router, private activatedRoute: ActivatedRoute) { }
+  constructor(private activatedRoute: ActivatedRoute, private reviewSvc: ReviewService, 
+        private router: Router) {}
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.queryParams$ = this.activatedRoute.queryParams.subscribe(
       async (queryParams) => {
-        const title = queryParams['title'];
-        this.reviewService.getSearch(title)
-        .then(result => {
-          this.reviews = result;
-          console.info("Getting results for.. " + title)
-        })
-        .catch((err) => console.log(err));
+        this.title = queryParams['query']
+        console.log("Getting results for.. " + this.title)
       }
-    );
+    )
+    this.reviewSvc.getSearch(this.title)
+      .then(p => {
+        this.reviews = p
+      })
+      .catch((err) => console.log(err));
   }
 
   onBackButton(): void {
@@ -36,7 +37,8 @@ export class MovieReviewsListComponent implements OnInit, OnDestroy {
   }
 
   onCommentClick(review: Review): void {
-    console.log(`Comment on ${review.title}`);
+    console.log(`Comment on ${review.title}`)
+    this.router.navigate(['/comment'], {queryParams: {moviename: review.title}})
   }
 
   ngOnDestroy(): void {
