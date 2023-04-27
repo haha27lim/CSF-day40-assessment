@@ -5,14 +5,14 @@ import { MovieReviewsListComponent } from './components/movie-reviews-list.compo
 import { PostCommentComponent } from './components/post-comment.component';
 
 const routes: Routes = [
-  {path:'', component: SearchReviewComponent },
-  {path: 'list', component: MovieReviewsListComponent},
-  {path: 'comment', component: PostCommentComponent},
+  { path: '', component: SearchReviewComponent },
+  { path: 'list', component: MovieReviewsListComponent},
+  { path: 'comment', component: PostCommentComponent},
   { path: '**', redirectTo: '', pathMatch: 'full'} 
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { useHash: true })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

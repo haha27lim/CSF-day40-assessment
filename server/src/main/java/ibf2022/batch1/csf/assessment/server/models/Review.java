@@ -1,11 +1,8 @@
 package ibf2022.batch1.csf.assessment.server.models;
 
-import org.springframework.stereotype.Repository;
-
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 
-@Repository
 // DO NOT MODIFY THIS CLASS
 public class Review {
 	// display_title
