@@ -38,7 +38,7 @@ export class MovieReviewsListComponent implements OnInit, OnDestroy {
 
   onCommentClick(review: Review): void {
     console.log(`Comment on ${review.title}`)
-    this.router.navigate(['/comment'], {queryParams: {moviename: review.title}})
+    this.router.navigate(['/comment', review.title])
   }
 
   ngOnDestroy(): void {

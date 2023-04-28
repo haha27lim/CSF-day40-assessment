@@ -14,7 +14,7 @@ import { Location } from '@angular/common';
 export class PostCommentComponent implements OnInit, OnDestroy  {
   
   commentForm!: FormGroup;
-  queryParams$! :  Subscription;
+  params$! :  Subscription;
   isFormValid: boolean = false;
   title!: string;
 
@@ -23,9 +23,9 @@ export class PostCommentComponent implements OnInit, OnDestroy  {
 
   ngOnInit(): void {
     this.commentForm = this.createForm()
-    this.queryParams$ = this.activatedRoute.queryParams.subscribe(
-      async (queryParams) => {
-        this.title = queryParams['moviename']
+    this.params$ = this.activatedRoute.params.subscribe(
+      async (params) => {
+        this.title = params['title']
         console.log('>>>title:', this.title)
       }
     )
@@ -63,7 +63,7 @@ export class PostCommentComponent implements OnInit, OnDestroy  {
   }
 
   ngOnDestroy(): void{
-    this.queryParams$.unsubscribe();
+    this.params$.unsubscribe();
   }
 
 }
